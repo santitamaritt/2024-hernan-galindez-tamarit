@@ -56,6 +56,48 @@ SpaceshipGameTest >> testCancellationCardCanBeUsedAtAnyMomentOfTheGame [
 ]
 
 { #category : #tests }
+SpaceshipGameTest >> testDoubleCardGivesSameSpaceshipTwoTurns [
+
+	| aSpaceship anotherSpaceship yetAnotherSpaceship fourthSpaceship aSpaceshipCollection aDiceCollection aGame specificGenerator |
+	aSpaceship := 'Uno'.
+	anotherSpaceship := 'Dos'.
+	yetAnotherSpaceship := 'Tres'.
+	fourthSpaceship := 'Cuatro'.
+
+
+	aSpaceshipCollection := OrderedCollection
+		                        with: aSpaceship
+		                        with: anotherSpaceship
+		                        with: yetAnotherSpaceship
+		                        with: fourthSpaceship.
+
+	aDiceCollection := { (LoadedDie sequence: #( 5 2 5 2 4 6 )) }.
+
+	specificGenerator := SpecificSquareGenerator with:
+		                     { (NormalSquare create -> 1) }.
+
+	aGame := SpaceshipGame
+		         withPlayers: aSpaceshipCollection
+		         withGameboardLength: 20
+		         withDice: aDiceCollection
+		         withLaps: 1
+		         withParsecs: 100
+		         squareGenerator: specificGenerator
+		         rewards: (IncrementFuelCapacity by: 1)
+		         cards: {
+				         Double.
+				         Ally.
+				         Acceleration }.
+
+	aGame playCard: Double new from: aSpaceship target: aSpaceship.
+
+	aGame playTurn.
+	aGame playTurn.
+
+	self assert: aGame nextPlayer name equals: anotherSpaceship "tiene que ser Dos"
+]
+
+{ #category : #tests }
 SpaceshipGameTest >> testErrorWhenAPlayerUsesCancellationCardAndNoOtherCardsWhereUsed [
 
 	| aSpaceship aDiceCollection aGame anotherSpaceship aSpaceshipCollection specificGenerator overloadCard |
@@ -290,6 +332,88 @@ SpaceshipGameTest >> testGameWinnerWithMoreThanOnePlayer [
 
 
 	self assert: aGame winner equals: aSpaceship
+]
+
+{ #category : #tests }
+SpaceshipGameTest >> testReverseCardReversesTurnOrder [
+
+	| aSpaceship anotherSpaceship yetAnotherSpaceship fourthSpaceship aSpaceshipCollection aDiceCollection aGame specificGenerator |
+	aSpaceship := 'Uno'.
+	anotherSpaceship := 'Dos'.
+	yetAnotherSpaceship := 'Tres'.
+	fourthSpaceship := 'Cuatro'.
+
+
+	aSpaceshipCollection := OrderedCollection
+		                        with: aSpaceship
+		                        with: anotherSpaceship
+		                        with: yetAnotherSpaceship
+		                        with: fourthSpaceship.
+
+	aDiceCollection := { (LoadedDie sequence: #( 5 2 5 2 4 6 )) }.
+
+	specificGenerator := SpecificSquareGenerator with:
+		                     { (NormalSquare create -> 1) }.
+
+	aGame := SpaceshipGame
+		         withPlayers: aSpaceshipCollection
+		         withGameboardLength: 20
+		         withDice: aDiceCollection
+		         withLaps: 1
+		         withParsecs: 100
+		         squareGenerator: specificGenerator
+		         rewards: (IncrementFuelCapacity by: 1)
+		         cards: {
+				         Reverse.
+				         Ally.
+				         Acceleration }.
+
+	aGame playCard: Reverse new from: aSpaceship target: aSpaceship.
+
+	aGame playTurn.
+
+	self assert: aGame nextPlayer name equals: yetAnotherSpaceship
+]
+
+{ #category : #tests }
+SpaceshipGameTest >> testSkipCardMakesNextPlayerLoseATurn [
+
+	| aSpaceship anotherSpaceship yetAnotherSpaceship fourthSpaceship aSpaceshipCollection aDiceCollection aGame specificGenerator |
+	aSpaceship := 'Uno'.
+	anotherSpaceship := 'Dos'.
+	yetAnotherSpaceship := 'Tres'.
+	fourthSpaceship := 'Cuatro'.
+
+
+	aSpaceshipCollection := OrderedCollection
+		                        with: aSpaceship
+		                        with: anotherSpaceship
+		                        with: yetAnotherSpaceship
+		                        with: fourthSpaceship.
+
+	aDiceCollection := { (LoadedDie sequence: #( 5 2 5 2 4 6 )) }.
+
+	specificGenerator := SpecificSquareGenerator with:
+		                     { (NormalSquare create -> 1) }.
+
+	aGame := SpaceshipGame
+		         withPlayers: aSpaceshipCollection
+		         withGameboardLength: 20
+		         withDice: aDiceCollection
+		         withLaps: 1
+		         withParsecs: 100
+		         squareGenerator: specificGenerator
+		         rewards: (IncrementFuelCapacity by: 1)
+		         cards: {
+				         Skip.
+				         Ally.
+				         Acceleration }.
+
+	aGame playCard: Skip new from: aSpaceship target: aSpaceship.
+
+	aGame playTurn.
+
+	self assert: aGame nextPlayer name equals: yetAnotherSpaceship
 ]
 
 { #category : #tests }

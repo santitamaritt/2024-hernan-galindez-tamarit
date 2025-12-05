@@ -9,7 +9,8 @@ Class {
 		'lostTurns',
 		'deck',
 		'ally',
-		'diceAdjustment'
+		'diceAdjustment',
+		'extraTurn'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -65,10 +66,25 @@ Spaceship >> changeTotalThrowBy: aNumber [
 	diceAdjustment := diceAdjustment + aNumber.
 ]
 
+{ #category : #initialization }
+Spaceship >> consumeExtraTurn [
+    extraTurn := false.
+]
+
 { #category : #setting }
 Spaceship >> giveCard: aCard [
 
 	deck addCard: aCard copy
+]
+
+{ #category : #initialization }
+Spaceship >> giveExtraTurn [
+    extraTurn := true.
+]
+
+{ #category : #initialization }
+Spaceship >> hasExtraTurn [
+    ^ extraTurn.
 ]
 
 { #category : #initialization }
@@ -81,7 +97,8 @@ Spaceship >> initializeWithName: aName withFuel: fuelCapacity [
 	lostTurns := 0.
 	diceAdjustment := 0.
 	ally := NullSpaceship new.
-	deck := Deck with: #(  ) asOrderedCollection
+	deck := Deck with: #(  ) asOrderedCollection.
+	extraTurn := false
 ]
 
 { #category : #'game logic' }

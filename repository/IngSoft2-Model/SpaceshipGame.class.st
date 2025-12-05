@@ -156,10 +156,13 @@ SpaceshipGame >> lapsCompletedOf: aSpaceshipName [
 SpaceshipGame >> nextPlayer [
 
 	| currentPlayer |
+	players first hasExtraTurn ifTrue: [
+		currentPlayer := players first.
+		currentPlayer consumeExtraTurn.
+		^ currentPlayer ].
+
 	currentPlayer := players removeFirst.
 	players addLast: currentPlayer.
-
-
 
 	[ currentPlayer canPlay ] whileFalse: [
 		currentPlayer lostATurn.
@@ -202,8 +205,7 @@ SpaceshipGame >> playTurn [
 	aNumber := dice throw.
 	aNumber = dice maxThrow ifTrue: [ rewards applyTo: spaceshipToPlay ].
 	spaceshipToPlay playWith: aNumber in: gameboard.
-	gameboard applyEffectTo: spaceshipToPlay.
-	
+	gameboard applyEffectTo: spaceshipToPlay
 ]
 
 { #category : #'game logic' }
