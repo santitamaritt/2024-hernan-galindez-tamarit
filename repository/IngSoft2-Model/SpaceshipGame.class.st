@@ -47,18 +47,21 @@ SpaceshipGame >> initializeWithPlayers: aCollectionOfPlayers withGameboardLength
 	dice := Dice with: aDiceCollection.
 
 	squareGenerator := DefaultSquareGenerator distributions: {
-			                   ([ NormalSquare create ] -> (3 / 10)).
+			                   ([ NormalSquare create ] -> (25 / 100)).
 			                   ([
 			                    HyperGravity withExpectedNumber:
-				                    dice maxThrow atRandom ] -> (2 / 10)).
+				                    dice maxThrow atRandom ] -> (20 / 100)).
 			                   ([ AtomicBomb create ] -> (2 / 100)).
-			                   ([ BlackHole create ] -> (2 / 10)).
+			                   ([ BlackHole create ] -> (20 / 100)).
 			                   ([
 			                    MoonWalk withSquaresToMove:
-				                    dice maxThrow atRandom ] -> (1 / 10)).
+				                    dice maxThrow atRandom ] -> (10 / 100)).
 			                   ([ HyperJump with: { (Parsecs of: 100) } ]
 			                    -> (8 / 100)).
-			                   ([ CardSquare create ] -> (1 / 10)) }.
+			                   ([ CardSquare create ] -> (10 / 100)).
+			                   ([ HyperSpaceJump create ] -> (5 / 100)) }.
+
+
 
 	rewards := RewardsManager with: {
 			           ((DecrementCurrentFuel by: 1) -> 0.2).

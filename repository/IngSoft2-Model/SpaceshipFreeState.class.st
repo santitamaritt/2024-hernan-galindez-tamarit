@@ -64,6 +64,15 @@ SpaceshipFreeState >> moveSpaceship: aSpaceship amount: anAmount in: aGameboard 
 ]
 
 { #category : #testing }
+SpaceshipFreeState >> moveSpaceshipWithoutFuel: aSpaceship amount: anAmount in: aGameboard [
+    | squaresToMove |
+
+    squaresToMove := anAmount + aSpaceship diceAdjustment.
+
+    aGameboard move: aSpaceship with: squaresToMove.
+]
+
+{ #category : #testing }
 SpaceshipFreeState >> needsToThrow: aSpaceship expected: expectedNumber [
     aSpaceship needsToThrow: expectedNumber.
 ]

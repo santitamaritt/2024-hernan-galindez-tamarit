@@ -1397,6 +1397,44 @@ SpaceshipGameTest >> testWhenPlayerLandsOnHyperGravityAndThrowsHigherNumberThanN
 ]
 
 { #category : #tests }
+SpaceshipGameTest >> testWhenPlayerLandsOnHyperSpaceJumpThenMovesFourSquaresWithoutFuel [
+
+	| aSpaceship aDiceCollection aGame aSpaceshipCollection specificGenerator initialFuel spaceshipUno |
+	aSpaceship := 'Uno'.
+	aSpaceshipCollection := OrderedCollection with: aSpaceship.
+
+	aDiceCollection := { (LoadedDie sequence: #( 4 9 )) }.
+
+	specificGenerator := SpecificSquareGenerator with:
+		                     { (HyperSpaceJump create -> 5) }.
+
+	aGame := SpaceshipGame
+		         withPlayers: aSpaceshipCollection
+		         withGameboardLength: 20
+		         withDice: aDiceCollection
+		         withLaps: 1
+		         withParsecs: 100
+		         squareGenerator: specificGenerator
+		         rewards: { IncrementFuelCapacity by: 1 }
+		         cards: {
+				         Overload.
+				         Ally.
+				         Acceleration }.
+
+	spaceshipUno := aGame players detect: [ :p | p name = 'Uno' ].
+	
+	initialFuel := spaceshipUno currentFuel.
+
+	aGame playTurn.
+
+	self assert: (aGame positionOf: aSpaceship) equals: 9.
+
+	self
+		assert: spaceshipUno currentFuel
+		equals: 14 "initialFuel: 18 -> 18 - 4 (que gasto en llegar a ese square) = 14"
+]
+
+{ #category : #tests }
 SpaceshipGameTest >> testWhenPlayerLandsOnMoonWalkThenAllOtherSpaceshipsMoveThreeSquaresBack [
 
 	| aSpaceship aDiceCollection aGame aSpaceshipCollection aSpaceship2 aSpaceship3 specificGenerator |

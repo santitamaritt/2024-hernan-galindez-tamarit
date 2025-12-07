@@ -175,6 +175,11 @@ Spaceship >> move: anAmount in: aGameboard [
     state moveSpaceship: self amount: anAmount in: aGameboard.
 ]
 
+{ #category : #accessing }
+Spaceship >> moveWithoutFuel: anAmount in: aGameboard [
+    state moveSpaceshipWithoutFuel: self amount: anAmount in: aGameboard.
+]
+
 { #category : #initialization }
 Spaceship >> name [
     ^ name

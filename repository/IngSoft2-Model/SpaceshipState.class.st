@@ -77,6 +77,11 @@ SpaceshipState >> moveSpaceship: aSpaceship amount: anAmount in: aGameboard [
 ]
 
 { #category : #testing }
+SpaceshipState >> moveSpaceshipWithoutFuel: aSpaceship amount: anAmount in: aGameboard [
+    self subclassResponsibility.
+]
+
+{ #category : #testing }
 SpaceshipState >> needsToThrow: aSpaceship expected: expectedNumber [
     self subclassResponsibility.
 ]

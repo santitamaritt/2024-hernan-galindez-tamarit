@@ -62,6 +62,12 @@ SpaceshipJailedState >> moveSpaceship: aSpaceship amount: anAmount in: aGameboar
 ]
 
 { #category : #testing }
+SpaceshipJailedState >> moveSpaceshipWithoutFuel: aSpaceship amount: anAmount in: aGameboard [
+
+	^ self
+]
+
+{ #category : #testing }
 SpaceshipJailedState >> needsToThrow: aSpaceship expected: expectedNumber [
     "Ignorar mientras esté jailed"
     ^ self.
