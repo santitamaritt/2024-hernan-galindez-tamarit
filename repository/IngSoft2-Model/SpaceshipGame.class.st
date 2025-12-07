@@ -209,6 +209,12 @@ SpaceshipGame >> playTurn [
 ]
 
 { #category : #'game logic' }
+SpaceshipGame >> players [
+    ^ players
+
+]
+
+{ #category : #'game logic' }
 SpaceshipGame >> positionOf: aSpaceshipName [
 
 	| aSpaceship |

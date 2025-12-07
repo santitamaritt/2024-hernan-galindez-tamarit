@@ -9,7 +9,8 @@ Class {
 		'measurement',
 		'measurmentPerSquare',
 		'lastSquareLandedOn',
-		'cards'
+		'cards',
+		'dice'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -73,6 +74,7 @@ Gameboard >> initializeWithNumberOfSquares: aNumberOfSquares withSpaceships: spa
 	measurmentPerSquare := Parsecs of:
 		                       aNumberOfParsecs // aNumberOfSquares.
 	cards := cardCollection.
+	dice := aDiceCollection.
 	board := squareGenerator generateSquares: aNumberOfSquares.
 	lastSquareLandedOn := NormalSquare create.
 	self setPlayersAtFirstPosition: spaceships
@@ -82,6 +84,12 @@ Gameboard >> initializeWithNumberOfSquares: aNumberOfSquares withSpaceships: spa
 Gameboard >> lapsCompletedOf: aSpaceship [
 
 	^ lapCounter at: aSpaceship
+]
+
+{ #category : #initialization }
+Gameboard >> maxDiceValue [
+    ^ dice maxThrow.
+
 ]
 
 { #category : #initialization }

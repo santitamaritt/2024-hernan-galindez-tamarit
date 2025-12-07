@@ -2,14 +2,15 @@ Class {
 	#name : #Spaceship,
 	#superclass : #Object,
 	#instVars : [
+		'state',
 		'name',
-		'maxCapacity',
 		'currentFuel',
+		'maxCapacity',
 		'needsToThrow',
 		'lostTurns',
-		'deck',
-		'ally',
 		'diceAdjustment',
+		'ally',
+		'deck',
 		'extraTurn'
 	],
 	#category : #'IngSoft2-Model'
@@ -21,6 +22,11 @@ Spaceship class >> withName: aName withFuel: fuelCapacity [
 	^ self new initializeWithName: aName withFuel: fuelCapacity
 ]
 
+{ #category : #initialization }
+Spaceship >> ally [
+    ^ ally
+]
+
 { #category : #accessing }
 Spaceship >> allyWith: aSpaceship [
 
@@ -28,23 +34,18 @@ Spaceship >> allyWith: aSpaceship [
 ]
 
 { #category : #setting }
-Spaceship >> applyCard: card [
-
-	deck appliedCard: card.
+Spaceship >> applyCard: aCard [
+    state applyCard: aCard to: self.
 ]
 
 { #category : #setting }
-Spaceship >> applyPenaltyIn: gameboard [
-
-	gameboard moveToStart: self.
-	currentFuel := maxCapacity.
-	lostTurns := 2
+Spaceship >> applyPenaltyIn: aGameboard [
+    state applyPenaltyTo: self in: aGameboard.
 ]
 
-{ #category : #testing }
+{ #category : #setting }
 Spaceship >> canPlay [
-
-	^ lostTurns = 0
+    ^ state canPlay: self.
 ]
 
 { #category : #setting }
@@ -66,9 +67,39 @@ Spaceship >> changeTotalThrowBy: aNumber [
 	diceAdjustment := diceAdjustment + aNumber.
 ]
 
-{ #category : #initialization }
+{ #category : #setting }
 Spaceship >> consumeExtraTurn [
-    extraTurn := false.
+    state consumeExtraTurnOf: self.
+]
+
+{ #category : #initialization }
+Spaceship >> currentFuel [
+    ^ currentFuel
+]
+
+{ #category : #initialization }
+Spaceship >> currentFuel: aNumber [
+    currentFuel := aNumber.
+]
+
+{ #category : #initialization }
+Spaceship >> deck [
+    ^ deck
+]
+
+{ #category : #initialization }
+Spaceship >> diceAdjustment [
+    ^ diceAdjustment
+]
+
+{ #category : #initialization }
+Spaceship >> extraTurn [
+    ^ extraTurn
+]
+
+{ #category : #setting }
+Spaceship >> extraTurn: aBoolean [
+	extraTurn := aBoolean
 ]
 
 { #category : #setting }
@@ -77,14 +108,20 @@ Spaceship >> giveCard: aCard [
 	deck addCard: aCard copy
 ]
 
-{ #category : #initialization }
+{ #category : #setting }
 Spaceship >> giveExtraTurn [
-    extraTurn := true.
+    state giveExtraTurnTo: self.
 ]
 
 { #category : #initialization }
+Spaceship >> goToJail [
+    state := SpaceshipJailedState for: self.
+
+]
+
+{ #category : #setting }
 Spaceship >> hasExtraTurn [
-    ^ extraTurn.
+    ^ state hasExtraTurn: self.
 ]
 
 { #category : #initialization }
@@ -98,39 +135,59 @@ Spaceship >> initializeWithName: aName withFuel: fuelCapacity [
 	diceAdjustment := 0.
 	ally := NullSpaceship new.
 	deck := Deck with: #(  ) asOrderedCollection.
-	extraTurn := false
-]
-
-{ #category : #'game logic' }
-Spaceship >> lostATurn [
-	lostTurns := lostTurns - 1.
-
-]
-
-{ #category : #accessing }
-Spaceship >> move: anAmountOfSquares in: aGameboard [
-
-	| squaresToMove |
-	squaresToMove := anAmountOfSquares + diceAdjustment.
-
-	self useAllyFuelIfNecessary: squaresToMove in: aGameboard.
-
-	currentFuel > squaresToMove abs
-		ifTrue: [
-			self changeCurrentFuelBy:  squaresToMove abs.
-			aGameboard move: self with: squaresToMove ]
-		ifFalse: [ self applyPenaltyIn: aGameboard ]
-]
-
-{ #category : #accessing }
-Spaceship >> name [ 
-	^name
+	extraTurn := false.
+	state := SpaceshipFreeState for: self.
 ]
 
 { #category : #initialization }
-Spaceship >> needsToThrow: expectedNumber [
+Spaceship >> isFree [
+    ^ state isFree
+]
 
-	needsToThrow := expectedNumber.
+{ #category : #setting }
+Spaceship >> isJailed [
+    ^ state isJailed
+]
+
+{ #category : #setting }
+Spaceship >> lostATurn [
+    state lostATurn: self.
+]
+
+{ #category : #initialization }
+Spaceship >> lostTurns [
+    ^ lostTurns
+]
+
+{ #category : #setting }
+Spaceship >> lostTurns: aNumber [
+    lostTurns := aNumber.
+
+]
+
+{ #category : #initialization }
+Spaceship >> maxCapacity [
+    ^ maxCapacity
+]
+
+{ #category : #setting }
+Spaceship >> move: anAmount in: aGameboard [
+    state moveSpaceship: self amount: anAmount in: aGameboard.
+]
+
+{ #category : #initialization }
+Spaceship >> name [
+    ^ name
+]
+
+{ #category : #initialization }
+Spaceship >> needsToThrow [
+    ^ needsToThrow
+]
+
+{ #category : #setting }
+Spaceship >> needsToThrow: aNumber [
+    needsToThrow := aNumber.
 ]
 
 { #category : #accessing }
@@ -147,9 +204,20 @@ Spaceship >> refuel [
 	currentFuel := maxCapacity
 ]
 
+{ #category : #initialization }
+Spaceship >> releaseFromJail [
+    state := SpaceshipFreeState for: self.
+
+]
+
 { #category : #setting }
 Spaceship >> removeEffect: cardToBeRemoved [
 	^ (deck removeCardEffect: cardToBeRemoved ) 
+]
+
+{ #category : #initialization }
+Spaceship >> state [
+    ^ state
 ]
 
 { #category : #accessing }

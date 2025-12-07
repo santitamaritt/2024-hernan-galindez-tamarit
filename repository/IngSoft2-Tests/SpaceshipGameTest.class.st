@@ -91,8 +91,8 @@ SpaceshipGameTest >> testDoubleCardGivesSameSpaceshipTwoTurns [
 
 	aGame playCard: Double new from: aSpaceship target: aSpaceship.
 
-	aGame playTurn.
-	aGame playTurn.
+	aGame playTurn. "juega Uno"
+	aGame playTurn. "vuelve a jugar Uno"
 
 	self assert: aGame nextPlayer name equals: anotherSpaceship "tiene que ser Dos"
 ]
@@ -255,6 +255,53 @@ SpaceshipGameTest >> testErrorWhenRedoCardIsUsedAndNoOtherCardsWereUsed [
 ]
 
 { #category : #tests }
+SpaceshipGameTest >> testFreedomCardReleasesSpaceshipFromJail [
+
+	| aSpaceship anotherSpaceship aSpaceshipCollection aDiceCollection aGame specificGenerator spaceshipUno spaceshipDos |
+	aSpaceship := 'Uno'.
+	anotherSpaceship := 'Dos'.
+	aSpaceshipCollection := OrderedCollection
+		                        with: aSpaceship
+		                        with: anotherSpaceship.
+
+	aDiceCollection := { (LoadedDie sequence: #( 6 6 6 8 8 )) }.
+
+	specificGenerator := SpecificSquareGenerator with:
+		                     { (Jail create -> 7) }.
+
+	aGame := SpaceshipGame
+		         withPlayers: aSpaceshipCollection
+		         withGameboardLength: 20
+		         withDice: aDiceCollection
+		         withLaps: 1
+		         withParsecs: 100
+		         squareGenerator: specificGenerator
+		         rewards: (IncrementFuelCapacity by: 1)
+		         cards: {
+				         Freedom.
+				         Ally.
+				         Acceleration }.
+
+	spaceshipUno := aGame players detect: [ :p | p name = 'Uno' ].
+	spaceshipDos := aGame players detect: [ :p | p name = 'Dos' ].
+
+
+	"nave Uno cae en Jail"
+	aGame playTurn.
+	aGame skipTurn. "skipeo el turno de nave Dos"
+
+	self assert: spaceshipUno isJailed.
+	
+	aGame playCard: Freedom new from: aSpaceship target: aSpaceship.
+
+	aGame playTurn.
+
+	aGame skipTurn. "skipe el turno de nave Dos"
+
+	self assert: spaceshipUno isFree
+]
+
+{ #category : #tests }
 SpaceshipGameTest >> testGameEndsWhenSpaceshipCompletesRequiredLaps [
 
 	| aSpaceship aDiceCollection aGame aSpaceshipCollection specificGenerator |
@@ -414,6 +461,96 @@ SpaceshipGameTest >> testSkipCardMakesNextPlayerLoseATurn [
 	aGame playTurn.
 
 	self assert: aGame nextPlayer name equals: yetAnotherSpaceship
+]
+
+{ #category : #tests }
+SpaceshipGameTest >> testSpaceshipDoesNotLeaveJailWhenNotRollingMaxValue [
+
+	| aSpaceship anotherSpaceship aSpaceshipCollection aDiceCollection aGame specificGenerator spaceshipUno spaceshipDos |
+	aSpaceship := 'Uno'.
+	anotherSpaceship := 'Dos'.
+	aSpaceshipCollection := OrderedCollection
+		                        with: aSpaceship
+		                        with: anotherSpaceship.
+
+	aDiceCollection := { (LoadedDie sequence: #( 6 6 6 8 8 )) }.
+
+	specificGenerator := SpecificSquareGenerator with:
+		                     { (Jail create -> 7) }.
+
+	aGame := SpaceshipGame
+		         withPlayers: aSpaceshipCollection
+		         withGameboardLength: 20
+		         withDice: aDiceCollection
+		         withLaps: 1
+		         withParsecs: 100
+		         squareGenerator: specificGenerator
+		         rewards: (IncrementFuelCapacity by: 1)
+		         cards: {
+				         Overload.
+				         Ally.
+				         Acceleration }.
+
+	spaceshipUno := aGame players detect: [ :p | p name = 'Uno' ].
+	spaceshipDos := aGame players detect: [ :p | p name = 'Dos' ].
+
+
+	"nave Uno cae en Jail"
+	aGame playTurn.
+	aGame skipTurn. "skipeo el turno de nave Dos"
+
+	self assert: spaceshipUno isJailed.
+
+	aGame playTurn. "nave Uno no tiro max"
+
+	aGame skipTurn. "skipe el turno de nave Dos"
+
+	self assert: spaceshipUno isJailed
+]
+
+{ #category : #tests }
+SpaceshipGameTest >> testSpaceshipLeavesJailWhenRollingMaxValue [
+
+	| aSpaceship anotherSpaceship aSpaceshipCollection aDiceCollection aGame specificGenerator spaceshipUno spaceshipDos |
+	aSpaceship := 'Uno'.
+	anotherSpaceship := 'Dos'.
+	aSpaceshipCollection := OrderedCollection
+		                        with: aSpaceship
+		                        with: anotherSpaceship.
+
+	aDiceCollection := { (LoadedDie sequence: #( 6 6 6 6 6 )) }.
+
+	specificGenerator := SpecificSquareGenerator with:
+		                     { (Jail create -> 7) }.
+
+	aGame := SpaceshipGame
+		         withPlayers: aSpaceshipCollection
+		         withGameboardLength: 20
+		         withDice: aDiceCollection
+		         withLaps: 1
+		         withParsecs: 100
+		         squareGenerator: specificGenerator
+		         rewards: (IncrementFuelCapacity by: 1)
+		         cards: {
+				         Overload.
+				         Ally.
+				         Acceleration }.
+
+	spaceshipUno := aGame players detect: [ :p | p name = 'Uno' ].
+	spaceshipDos := aGame players detect: [ :p | p name = 'Dos' ].
+
+
+	"nave Uno cae en Jail"
+	aGame playTurn.
+	aGame skipTurn. "skipeo el turno de nave Dos"
+
+	self assert: spaceshipUno isJailed.
+
+	aGame playTurn. "nave uno tira max"
+
+	aGame skipTurn. "skipe el turno de nave Dos"
+
+	self assert: spaceshipUno isFree
 ]
 
 { #category : #tests }
